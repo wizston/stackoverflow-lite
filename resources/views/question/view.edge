@@ -1,0 +1,161 @@
+@layout('layout.master')
+
+@section('content')
+    <div class="container" id="editor">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Ask a question</h2>
+                <div class="post beforepagination">
+                    <div class="topwrap">
+                        <div class="userinfo pull-left">
+                            <div class="avatar">
+                                <img src="{{ question.user.avatarpath }}" alt="">
+                                <div class="status green">&nbsp;</div>
+                            </div>
+
+                            <div class="icons">
+                                <img src="images/icon1.jpg" alt=""><img src="images/icon4.jpg" alt=""><img src="images/icon5.jpg" alt=""><img src="images/icon6.jpg" alt="">
+                            </div>
+                        </div>
+                        <div class="posttext pull-left">
+                            <h2>{{ question.title }}</h2>
+                            <div>{{{ parseMd(question.body) }}}</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="postinfobot">
+
+                        <div class="likeblock pull-left">
+                            <a href="#" class="up"><i class="fa fa-thumbs-o-up"></i>25</a>
+                            <a href="#" class="down"><i class="fa fa-thumbs-o-down"></i>3</a>
+                        </div>
+
+                        <div class="prev pull-left">
+                            <a href="#"><i class="fa fa-reply"></i></a>
+                        </div>
+
+                        <div class="posted pull-left"><i class="fa fa-clock-o"></i> Posted on : 20 Nov @ 9:30am</div>
+
+                        <div class="next pull-right">
+                            <a href="#"><i class="fa fa-share"></i></a>
+
+                            <a href="#"><i class="fa fa-flag"></i></a>
+                        </div>
+
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <hr>
+                <h3>Answers:</h3>
+
+                @include('layout.alerts')
+
+
+                @each(answer in question.answers)
+                <div class="row shadow-sm bg-white mb-2">
+                    <div class="col-1 p-0" style="background: #f6f6f6;">
+                        <div class="answer-left-pane p-2 text-center" style="color: #6c5c5c;">
+
+                            <a href="#" class="up"><i class="fa fa-thumbs-o-up p-0"></i></a>
+                            <hr class="m-1">
+                            <span class="count" style="font-size: large;">{{ answer.votes }}</span>
+                            <hr class="m-1">
+                            <a href="#" class="down m-0"><i class="fa fa-thumbs-o-down p-0"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-11 p-0">
+                        <div class="card border-0 bg-white rounded-0">
+                            <div class="card-body p-2">
+                                <div class="media">
+                                    <img class="mr-3" width="50px" height="50" src="{{ answer.user.avatarpath }}" alt="Generic placeholder image">
+                                    <div class="media-body">
+                                        <div class="row">
+
+                                            <h6 class="card-title col-7">{{ answer.user.name }}</h6>
+                                            <div class="col-5">
+                                                <div class="posted pull-right" style="font-size: smaller"><i class="fa fa-clock-o"></i>20 Nov @ 9:30am</div>
+                                            </div>
+                                        </div>
+                                        <hr class="m-1">
+                                        {{{ parseMd(answer.answer + '') }}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @else
+                    <div class="border border-warning">
+                        <h3 class="text-muted text-center"> No answers yet </h3>
+                        <h4 class="text-danger text-center"> Be the first to answer this question </h4>
+                    </div>
+                    @endeach
+
+                    <hr>
+                    <form method="POST" action="{{ route('questions.answer.post', { id: question.id}) }}">
+                        {{ csrfField() }}
+                        <textarea name="answer" id="answerEditor" rows="5"
+                                  class="form-control" {{ elIf(' is-invalid', getErrorFor('answer'), hasErrorFor('answer')) }}">{{ old('answer', '') }}</textarea>
+                        <div class="invalid-feedback">{{ getErrorFor('answer') }}</div>
+
+                        <button class="btn-warning btn pull-right mt-2">Submit Answer</button>
+                    </form>
+                    <div class="clearfix"></div>
+            </div>
+            <div class="col-md-4">
+                <h4>&nbsp</h4>
+                <div class="sidebarblock">
+                    <h3>Categories</h3>
+                    <div class="divline"></div>
+                    <div class="blocktxt">
+                        <ul class="cats">
+                            <li><a href="#">Trading for Money <span class="badge pull-right">20</span></a></li>
+                            <li><a href="#">Vault Keys Giveway <span class="badge pull-right">10</span></a></li>
+                            <li><a href="#">Misc Guns Locations <span class="badge pull-right">50</span></a></li>
+                            <li><a href="#">Looking for Players <span class="badge pull-right">36</span></a></li>
+                            <li><a href="#">Stupid Bugs &amp; Solves <span class="badge pull-right">41</span></a></li>
+                            <li><a href="#">Video &amp; Audio Drivers <span class="badge pull-right">11</span></a></li>
+                            <li><a href="#">2K Official Forums <span class="badge pull-right">5</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@section('after_styles')
+    <style>
+        .CodeMirror, .CodeMirror-scroll {
+            min-height: 150px !important;
+        }
+    </style>
+@endsection
+@section('after_scripts')
+    {{--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>--}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    {{--<script src="https://unpkg.com/marked@0.3.6"></script>--}}
+    {{--<script src="https://unpkg.com/lodash@4.16.0"></script>--}}
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("answerEditor") });
+    </script>
+    {{--<script>--}}
+    {{--const vaa = "{{ question.body }}";--}}
+    {{--new Vue({--}}
+    {{--el: '#editor',--}}
+    {{--data: {--}}
+    {{--body: vaa--}}
+    {{--},--}}
+    {{--computed: {--}}
+    {{--compiledMarkdown: function () {--}}
+    {{--return marked(this.body, { sanitize: true })--}}
+    {{--}--}}
+    {{--},--}}
+    {{--methods: {--}}
+    {{--update: _.debounce(function (e) {--}}
+    {{--this.body = e.target.value--}}
+    {{--}, 300)--}}
+    {{--}--}}
+    {{--})--}}
+    {{--</script>--}}
+@endsection

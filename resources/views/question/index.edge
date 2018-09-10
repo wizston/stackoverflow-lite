@@ -1,0 +1,109 @@
+@layout('layout.master')
+
+@section('content')
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				@include('layout.alerts')
+				@each(question in questions)
+				<div class="post">
+					<div class="wrap-ut pull-left">
+						<div class="userinfo pull-left">
+							<div class="avatar">
+								<img src="{{ question.user.avatarpath }}" alt="" width="37px" height="37px">
+								{{--<div class="status green">&nbsp;</div>--}}
+							</div>
+
+							<div class="icons">
+								@if(auth.user.id === question.user_id)
+									<div class="btn-group" role="group" aria-label="Basic example">
+										<a href="{{ route('questions.delete0', {id: question.id}) }}" class="btn btn-sm btn-danger">
+											<i class="fa fa-trash"></i>
+										</a>
+										<button type="button" class="btn btn-sm btn-secondary">
+											<i class="fa fa-edit"></i>
+										</button>
+									</div>
+								@endif
+							</div>
+						</div>
+						<div class="posttext pull-left">
+							<h2><a href="{{ route('questions.view', {id: question.id, slug: question.slug}) }}">{{ question.title }}</a></h2>
+							<p>{{ plainMd(question.body.substring(0, 140)) }}</p>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="postinfo pull-left">
+						<div class="comments">
+							<div class="commentbg">
+								{{ question.answers.length }}
+								<div class="mark"></div>
+							</div>
+
+						</div>
+						<div class="views"><i class="fa fa-eye"></i> {{ question.views }}</div>
+						<div class="time"><i class="fa fa-clock-o"></i> {{ question.created_at }}</div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				@else
+					<h2> No Question to display yet </h2>
+					@endeach
+
+
+					@if(paginate.numLinks)
+						<div class="row">
+							<div class="col-lg-8 col-xs-12">
+
+						<nav aria-label="...">
+							@if(paginate.firstPage !== paginate.currentPage)
+							<div class="pull-left">
+								<a href="{{ paginate.url }}{{ paginate.firstPage }}" class="prevnext">
+									<i class="fa fa-angle-left"></i>
+								</a>
+							</div>
+							@endif
+							<div class="pull-left">
+								<ul class="paginationforum">
+									@each(link in paginate.links)
+										@if(link.active)
+											<li class="page-item disabled"><a class="page-link" href="{{ link.url }}">{{ link.page }}</a></li>
+										@else
+											<li class="page-item"><a class="page-link" href="{{ link.url }}">{{ link.page }}</a></li>
+										@endif
+									@endeach
+								</ul>
+							</div>
+							@if(paginate.lastPage !== paginate.currentPage)
+							<div class="pull-left">
+								<a href="{{ paginate.url }}{{ paginate.lastPage }}" class="prevnext last">
+									<i class="fa fa-angle-right"></i>
+								</a>
+							</div>
+							@endif
+							<div class="clearfix"></div>
+						</nav>
+							</div>
+						</div>
+					@endif
+			</div>
+			<div class="col-md-4">
+				<div class="sidebarblock">
+					<h3>Categories</h3>
+					<div class="divline"></div>
+					<div class="blocktxt">
+						<ul class="cats">
+							<li><a href="#">Trading for Money <span class="badge pull-right">20</span></a></li>
+							<li><a href="#">Vault Keys Giveway <span class="badge pull-right">10</span></a></li>
+							<li><a href="#">Misc Guns Locations <span class="badge pull-right">50</span></a></li>
+							<li><a href="#">Looking for Players <span class="badge pull-right">36</span></a></li>
+							<li><a href="#">Stupid Bugs &amp; Solves <span class="badge pull-right">41</span></a></li>
+							<li><a href="#">Video &amp; Audio Drivers <span class="badge pull-right">11</span></a></li>
+							<li><a href="#">2K Official Forums <span class="badge pull-right">5</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+@endsection
