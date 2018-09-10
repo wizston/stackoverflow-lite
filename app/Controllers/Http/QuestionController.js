@@ -9,7 +9,7 @@ class QuestionController {
     async index ({ view, request, response }) {
 
         const currentPage = request.input('page') ? request.input('page') : 1;
-        const perPage = 2;
+        const perPage = 30;
 
         let questions = await Question.query().with('answers').with('user').paginate(currentPage, perPage);
         questions = questions.toJSON();
